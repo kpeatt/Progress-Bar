@@ -19,6 +19,12 @@ function strip_cdata($string)
 
 if(isset($_POST['submit'])) {
 
+include_once('config.php');
+
+$dbhost = $config['dbhost'];
+$dbuser = $config['dbuser'];
+$dbpw = $config['dbpw'];
+
 $apiKey = "4025BCF7889FDAE9DC651ECE0EC4022E";
 
 $path = $_REQUEST['path'];
@@ -31,7 +37,7 @@ $xml = simplexml_load_file("http://steamcommunity.com/id/".$path."/?xml=1");
   
   $xmldeep = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
   
-  $dbh = new PDO("mysql:host=mysql.kylepeatt.com;dbname=progressbar", "kpeatt", "fux0r123");
+  $dbh = new PDO("mysql:host=".$dbhost.";dbname=progressbar", $dbuser, $dbpw);
   
   echo "Connected to database.<br>";
   
