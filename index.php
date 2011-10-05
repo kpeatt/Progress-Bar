@@ -27,6 +27,8 @@ $xml = simplexml_load_file("http://steamcommunity.com/id/".$path."/?xml=1");
 
   $steamID = $xml->steamID64;
   
+  if($steamID != ""){
+  
   $xmldeep = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
   
   $dbh = new PDO("mysql:host=mysql.kylepeatt.com;dbname=progressbar", "kpeatt", "fux0r123");
@@ -97,6 +99,10 @@ $xml = simplexml_load_file("http://steamcommunity.com/id/".$path."/?xml=1");
   	
   } else {
   	echo "Existing user!";
+  }
+  
+  } else {
+  	echo "That's not your Community URL, friend";
   }
 
 }
