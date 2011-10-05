@@ -64,33 +64,33 @@ $xml = simplexml_load_file("http://steamcommunity.com/id/".$path."/?xml=1");
   	echo "Last Log Off: ".$steam_lastlogoff." <br><br>";
   	
   	try {
-  	
-  	$qry = "INSERT INTO `users` (`name`,`steam_id`,`steam_name`,`steam_realname`,`steam_customurl`,`steam_avatar`,`steam_avatar_med`,`steam_avatar_full`,`steam_loc_country`, `steam_loc_state`,`steam_loc_cityid`,`steam_lastlogoff`,`steam_membersince`) VALUES (:name,:steam_id,:steam_name,:steam_realname,:steam_customurl,:steam_avatar,:steam_avatar_med,:steam_avatar_full,:steam_loc_country, :steam_loc_state,:steam_loc_cityid,FROM_UNIXTIME(:steam_lastlogoff),FROM_UNIXTIME(:steam_membersince))";
-  	
-  	$sql = $dbh->prepare($qry);
-  	
-  	$sql->bindValue(':name', $steam_name);
-  	$sql->bindValue(':steam_id', $steamID);
-  	$sql->bindValue(':steam_name', $steam_name);
-  	$sql->bindValue(':steam_realname', $steam_realname);
-  	$sql->bindValue(':steam_customurl', $steam_customURL);
-  	$sql->bindValue(':steam_avatar', $steam_avatar);
-  	$sql->bindValue(':steam_avatar_med', $steam_avatar_med);
-  	$sql->bindValue(':steam_avatar_full', $steam_avatar_full);
-  	$sql->bindValue(':steam_loc_country', $steam_loc_country);
-  	$sql->bindValue(':steam_loc_state', $steam_loc_state);
-  	$sql->bindValue(':steam_loc_cityid', $steam_loc_cityid);
-  	$sql->bindValue(':steam_lastlogoff', $steam_lastlogoff);
-  	$sql->bindValue(':steam_membersince', $steam_membersince);
-  	
-	$sql->execute();
-	
-	echo "Inserted into DB!<br>";
-	
-	print_r($sql);
-	
-	$dhb = null;
-	
+	  	
+	  	$qry = "INSERT INTO `users` (`name`,`steam_id`,`steam_name`,`steam_realname`,`steam_customurl`,`steam_avatar`,`steam_avatar_med`,`steam_avatar_full`,`steam_loc_country`, `steam_loc_state`,`steam_loc_cityid`,`steam_lastlogoff`,`steam_membersince`) VALUES (:name,:steam_id,:steam_name,:steam_realname,:steam_customurl,:steam_avatar,:steam_avatar_med,:steam_avatar_full,:steam_loc_country, :steam_loc_state,:steam_loc_cityid,FROM_UNIXTIME(:steam_lastlogoff),FROM_UNIXTIME(:steam_membersince))";
+	  	
+	  	$sql = $dbh->prepare($qry);
+	  	
+	  	$sql->bindValue(':name', $steam_name);
+	  	$sql->bindValue(':steam_id', $steamID);
+	  	$sql->bindValue(':steam_name', $steam_name);
+	  	$sql->bindValue(':steam_realname', $steam_realname);
+	  	$sql->bindValue(':steam_customurl', $steam_customURL);
+	  	$sql->bindValue(':steam_avatar', $steam_avatar);
+	  	$sql->bindValue(':steam_avatar_med', $steam_avatar_med);
+	  	$sql->bindValue(':steam_avatar_full', $steam_avatar_full);
+	  	$sql->bindValue(':steam_loc_country', $steam_loc_country);
+	  	$sql->bindValue(':steam_loc_state', $steam_loc_state);
+	  	$sql->bindValue(':steam_loc_cityid', $steam_loc_cityid);
+	  	$sql->bindValue(':steam_lastlogoff', $steam_lastlogoff);
+	  	$sql->bindValue(':steam_membersince', $steam_membersince);
+	  	
+		$sql->execute();
+		
+		echo "Inserted into DB!<br>";
+		
+		print_r($sql);
+		
+		$dhb = null;
+		
 	}
 	catch(PDOException $e)    {
 	    echo $e->getMessage();
@@ -98,7 +98,61 @@ $xml = simplexml_load_file("http://steamcommunity.com/id/".$path."/?xml=1");
 	
   	
   } else {
-  	echo "Existing user!";
+  	echo "<br><br>Existing user!<br>";
+  	
+  	echo "Attempting to update information";
+  	
+  	$steam_name = strip_cdata($xml->steamID);
+  	$steam_realname = $xmldeep->players->player->realname;
+  	$steam_avatar = strip_cdata($xml->avatarIcon);
+  	$steam_avatar_med = strip_cdata($xml->avatarMedium);
+  	$steam_avatar_full = strip_cdata($xml->avatarFull);
+  	$steam_customURL = strip_cdata($xml->customURL);
+  	$steam_membersince = $xmldeep->players->player->timecreated;
+  	$steam_lastlogoff = $xmldeep->players->player->lastlogoff;
+  	$steam_loc_country = $xmldeep->players->player->loccountrycode;
+  	$steam_loc_state = $xmldeep->players->player->locstatecode;
+  	$steam_loc_cityid = $xmldeep->players->player->loccityid;
+  	
+  	echo "Name: ".$steam_name." <br>";
+  	echo "Steam ID: ".$steamID." <br>";
+  	echo "Real Name: ".$steam_realname." <br>";
+  	echo "Last Log Off: ".$steam_lastlogoff." <br><br>";
+  	
+  	try {
+	  	
+	  	$qry = "UPDATE `users` SET `name`=:name,`steam_name`=:steam_name,`steam_realname`=:steam_realname,`steam_customurl`=:steam_customurl,`steam_avatar`=:steam_avatar,`steam_avatar_med`=:steam_avatar_med,`steam_avatar_full`:steam_avatar_full,`steam_loc_country`:steam_loc_country, `steam_loc_state`=:steam_loc_state,`steam_loc_cityid`=:steam_loc_cityid,`steam_lastlogoff`=FROM_UNIXTIME(:steam_lastlogoff),`steam_membersince`=FROM_UNIXTIME(:steam_membersince) WHERE `steam_id`=:steam_id";
+	  	
+	  	$sql = $dbh->prepare($qry);
+	  	
+	  	$sql->bindValue(':name', $steam_name);
+	  	$sql->bindValue(':steam_id', $steamID);
+	  	$sql->bindValue(':steam_name', $steam_name);
+	  	$sql->bindValue(':steam_realname', $steam_realname);
+	  	$sql->bindValue(':steam_customurl', $steam_customURL);
+	  	$sql->bindValue(':steam_avatar', $steam_avatar);
+	  	$sql->bindValue(':steam_avatar_med', $steam_avatar_med);
+	  	$sql->bindValue(':steam_avatar_full', $steam_avatar_full);
+	  	$sql->bindValue(':steam_loc_country', $steam_loc_country);
+	  	$sql->bindValue(':steam_loc_state', $steam_loc_state);
+	  	$sql->bindValue(':steam_loc_cityid', $steam_loc_cityid);
+	  	$sql->bindValue(':steam_lastlogoff', $steam_lastlogoff);
+	  	$sql->bindValue(':steam_membersince', $steam_membersince);
+	  	
+		$sql->execute();
+		
+		echo "Inserted into DB!<br>";
+		
+		print_r($sql);
+		
+		$dhb = null;
+		
+	}
+	catch(PDOException $e)    {
+	    echo $e->getMessage();
+    }
+	
+  	
   }
   
   } else {
