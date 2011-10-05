@@ -63,7 +63,7 @@ $xml = simplexml_load_file("http://steamcommunity.com/id/".$path."/?xml=1");
   	
   	try {
   	
-  	$qry = "INSERT INTO `users` (`name`,`steam_id`,`steam_name`,`steam_realname`,`steam_customurl`,`steam_avatar`,`steam_avatar_med`,`steam_avatar_full`,`steam_loc_country`, `steam_loc_state`,`steam_loc_cityid`,`steam_lastlogoff`,`steam_membersince`) VALUES (:name,:steam_id,:steam_name,:steam_realname,:steam_customurl,:steam_avatar,:steam_avatar_med,:steam_avatar_full,:steam_loc_country, :steam_loc_state,:steam_loc_cityid,:steam_lastlogoff,:steam_membersince)";
+  	$qry = "INSERT INTO `users` (`name`,`steam_id`,`steam_name`,`steam_realname`,`steam_customurl`,`steam_avatar`,`steam_avatar_med`,`steam_avatar_full`,`steam_loc_country`, `steam_loc_state`,`steam_loc_cityid`,`steam_lastlogoff`,`steam_membersince`) VALUES (:name,:steam_id,:steam_name,:steam_realname,:steam_customurl,:steam_avatar,:steam_avatar_med,:steam_avatar_full,:steam_loc_country, :steam_loc_state,:steam_loc_cityid,FROM_UNIXTIME(:steam_lastlogoff),FROM_UNIXTIME(:steam_membersince))";
   	
   	$sql = $dbh->prepare($qry);
   	
