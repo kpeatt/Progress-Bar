@@ -30,11 +30,7 @@ class UsersController extends AppController {
             
             echo "Success!<br>";
 
-            if ($sregContents) {
-                if (array_key_exists('claimed_id', $sregContents)) {
-                    debug($sregContents['claimed_id']);
-                }
-            }
+            debug($sregContents);
         }
     }
 }
