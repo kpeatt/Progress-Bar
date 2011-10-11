@@ -18,6 +18,29 @@ class UsersController extends AppController {
         } elseif ($this->Openid->isOpenIDResponse()) {
             $this->handleOpenIDResponse($returnTo);
         }
+        
+        if(isset($steamID)) {
+        	$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
+			$apiuserinfo = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
+			
+			$steam_name = $this->strip_cdata($userinfo->steamID);
+		  	$steam_realname = $apiuserinfo->players->player->realname;
+		  	$steam_avatar = $this->strip_cdata($userinfo->avatarIcon);
+		  	$steam_avatar_med = $this->strip_cdata($userinfo->avatarMedium);
+		  	$steam_avatar_full = $this->strip_cdata($userinfo->avatarFull);
+		  	$steam_customURL = $this->strip_cdata($userinfo->customURL);
+		  	$steam_membersince = $apiuserinfo->players->player->timecreated;
+		  	$steam_lastlogoff = $apiuserinfo->players->player->lastlogoff;
+		  	$steam_loc_country = $apiuserinfo->players->player->loccountrycode;
+		  	$steam_loc_state = $apiuserinfo->players->player->locstatecode;
+		  	$steam_loc_cityid = $apiuserinfo->players->player->loccityid;
+		  	
+		  	echo $steam_name."<br>";
+		  	echo $steam_realname;
+			
+        }
+        
+        
     }
     
     private function makeOpenIDRequest($openid, $returnTo, $realm) {
@@ -41,24 +64,10 @@ class UsersController extends AppController {
             preg_match("#^http://steamcommunity.com/openid/id/([0-9]{17,25})#", $_GET['openid_claimed_id'], $matches);
 			$steamID = is_numeric($matches[1]) ? $matches[1] : 0;
 			
-			$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
-			$apiuserinfo = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
+		}
+		
+		return $steamID;
 			
-			$steam_name = $this->strip_cdata($userinfo->steamID);
-		  	$steam_realname = $apiuserinfo->players->player->realname;
-		  	$steam_avatar = $this->strip_cdata($userinfo->avatarIcon);
-		  	$steam_avatar_med = $this->strip_cdata($userinfo->avatarMedium);
-		  	$steam_avatar_full = $this->strip_cdata($userinfo->avatarFull);
-		  	$steam_customURL = $this->strip_cdata($userinfo->customURL);
-		  	$steam_membersince = $apiuserinfo->players->player->timecreated;
-		  	$steam_lastlogoff = $apiuserinfo->players->player->lastlogoff;
-		  	$steam_loc_country = $apiuserinfo->players->player->loccountrycode;
-		  	$steam_loc_state = $apiuserinfo->players->player->locstatecode;
-		  	$steam_loc_cityid = $apiuserinfo->players->player->loccityid;
-		  	
-		  	echo $steam_name;
-			
-        }
     }
 }
 
