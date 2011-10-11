@@ -1,2 +1,3 @@
 /config.php
 /app/Config/database.php
+/app/tmp/**/* 

@@ -13,9 +13,6 @@
  * To accept Google Apps OpenIDs, use the following config setting:
  *     public $components = array('Openid' => array('accept_google_apps' => true));
  *
- * To make use of Email Address to URL Transformation (EAUT), you also need the
- * EAUT library: http://code.google.com/p/eaut/
- *
  * Copyright (c) by Daniel Hofstetter (daniel.hofstetter@42dh.com, http://cakebaker.42dh.com)
  *
  * Licensed under The MIT License
@@ -23,7 +20,7 @@
  *
  * @license http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-class OpenidComponent extends Object {
+class OpenidComponent extends Component {
     private $controller = null;
     private $importPrefix = '';
     private $useDatabase = false;
@@ -33,8 +30,12 @@ class OpenidComponent extends Object {
     const SREG_REQUIRED = 'sreg_required';
     const SREG_OPTIONAL = 'sreg_optional';
 
-    public function __construct() {
-        parent::__construct();
+    public function __construct(ComponentCollection $collection, $settings = array()) {
+        parent::__construct($collection, $settings);
+        $this->handleSettings($settings);
+
+        // XXX ensure the session is started to avoid "Undefined variable _SESSION" notices from the OpenID lib
+        session_start();
 
         $pathToVendorsFolder = $this->getPathToVendorsFolderWithOpenIDLibrary();
 
@@ -48,21 +49,6 @@ class OpenidComponent extends Object {
 
         $this->addToIncludePath($pathToVendorsFolder);
         $this->importCoreFilesFromOpenIDLibrary();
-    }
-
-    public function initialize($controller, $settings) {
-        if (isset($settings['use_database'])) {
-            $this->useDatabase = $settings['use_database'];
-        }
-
-        if (isset($settings['database_config'])) {
-            $this->databaseConfig = $settings['database_config'];
-            $this->useDatabase = true;
-        }
-
-        if (isset($settings['accept_google_apps'])) {
-            $this->acceptGoogleApps = $settings['accept_google_apps'];
-        }
     }
 
     public function startUp($controller) {
@@ -83,10 +69,6 @@ class OpenidComponent extends Object {
         $openidUrl = trim($openidUrl);
 
         if ($openidUrl != '') {
-            if ($this->isEmail($openidUrl)) {
-                $openidUrl = $this->transformEmailToOpenID($openidUrl);
-            }
-
             $consumer = $this->getConsumer();
             $authRequest = $consumer->begin($openidUrl);
         }
@@ -183,7 +165,7 @@ class OpenidComponent extends Object {
     private function getMySQLStore() {
         App::import('Vendor', $this->importPrefix.'peardb', array('file' => 'pear'.DS.'DB.php'));
         App::import('Vendor', $this->importPrefix.'mysqlstore', array('file' => 'Auth'.DS.'OpenID'.DS.'MySQLStore.php'));
-        App::import('Core', 'ConnectionManager');
+        App::uses('ConnectionManager', 'Model');
         $dataSource = ConnectionManager::getDataSource($this->databaseConfig);
 
         $dsn = array(
@@ -209,14 +191,14 @@ class OpenidComponent extends Object {
         if ($this->isPathWithinPlugin(__FILE__)) {
             $pluginName = $this->getPluginName();
 
-            if (file_exists(APP.'plugins'.DS.$pluginName.DS.'vendors'.DS.'Auth')) {
-                $pathToVendorsFolder = APP.'plugins'.DS.$pluginName.DS.'vendors'.DS;
+            if (file_exists(APP.'Plugin'.DS.$pluginName.DS.'Vendor'.DS.'Auth')) {
+                $pathToVendorsFolder = APP.'Plugin'.DS.$pluginName.DS.'Vendor'.DS;
             }
         }
 
         if ($pathToVendorsFolder == '') {
-            if (file_exists(APP.'vendors'.DS.'Auth')) {
-                $pathToVendorsFolder = APP.'vendors'.DS;
+            if (file_exists(APP.'Vendor'.DS.'Auth')) {
+                $pathToVendorsFolder = APP.'Vendor'.DS;
             } elseif (file_exists(VENDORS.'Auth')) {
                 $pathToVendorsFolder = VENDORS;
             }
@@ -227,9 +209,10 @@ class OpenidComponent extends Object {
 
     private function getPluginName() {
         $result = array();
+        App::uses('Folder', 'Utility');
         $ds = (Folder::isWindowsPath(__FILE__)) ? '\\\\' : DS;
 
-        if (preg_match('#'.$ds.'plugins'.$ds.'(.*)'.$ds.'controllers#', __FILE__, $result)) {
+        if (preg_match('#'.$ds.'Plugin'.$ds.'(.*)'.$ds.'Controller#', __FILE__, $result)) {
             return $result[1];
         }
 
@@ -258,15 +241,26 @@ class OpenidComponent extends Object {
         return $store;
     }
 
+    private function handleSettings($settings) {
+        if (isset($settings['use_database'])) {
+            $this->useDatabase = $settings['use_database'];
+        }
+
+        if (isset($settings['database_config'])) {
+            $this->databaseConfig = $settings['database_config'];
+            $this->useDatabase = true;
+        }
+
+        if (isset($settings['accept_google_apps'])) {
+            $this->acceptGoogleApps = $settings['accept_google_apps'];
+        }
+    }
+
     private function importCoreFilesFromOpenIDLibrary() {
         App::import('Vendor', $this->importPrefix.'consumer', array('file' => 'Auth'.DS.'OpenID'.DS.'Consumer.php'));
         App::import('Vendor', $this->importPrefix.'sreg', array('file' => 'Auth'.DS.'OpenID'.DS.'SReg.php'));
         App::import('Vendor', $this->importPrefix.'ax', array('file' => 'Auth'.DS.'OpenID'.DS.'AX.php'));
         App::import('Vendor', $this->importPrefix.'google', array('file' => 'Auth'.DS.'OpenID'.DS.'google_discovery.php'));
-    }
-
-    private function isEmail($string) {
-        return strpos($string, '@');
     }
 
     private function isOpenIDResponseViaGET() {
@@ -278,7 +272,7 @@ class OpenidComponent extends Object {
     }
 
     private function isPathWithinPlugin($path) {
-        return strpos($path, DS.'plugins'.DS) ? true : false;
+        return strpos($path, DS.'Plugin'.DS) ? true : false;
     }
 
     private function redirect($request, $returnTo, $realm) {
@@ -303,13 +297,5 @@ class OpenidComponent extends Object {
              "<body onload='document.getElementById(\"".$formId."\").submit()'>".
              $formHtml.'</body></html>';
         exit;
-    }
-
-    private function transformEmailToOpenID($email) {
-        if (App::import('Vendor', $this->importPrefix.'emailtoid', array('file' => 'Auth'.DS.'Yadis'.DS.'Email.php'))) {
-            return Auth_Yadis_Email_getID($email);
-        }
-
-        throw new InvalidArgumentException('Invalid OpenID');
     }
 }
