@@ -25,12 +25,12 @@ class UsersController extends AppController {
         $response = $this->Openid->getResponse($returnTo);
 
         if ($response->status == Auth_OpenID_SUCCESS) {
-            $sregResponse = Auth_OpenID_SRegResponse::fromSuccessResponse($response);
-            $sregContents = $sregResponse->contents();
-            
+			
+			$params = $this->params['url'];
+
             echo "Success!<br>";
 
-            debug($sregResponse);
+            debug($params);
         }
     }
 }
