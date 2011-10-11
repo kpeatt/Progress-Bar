@@ -10,38 +10,48 @@ class UsersController extends AppController {
 		}
 
     public function login() {
+    
         $realm = 'http://'.$_SERVER['HTTP_HOST'];
         $returnTo = $realm . '/users/login';
 
         if ($this->RequestHandler->isPost() && !$this->Openid->isOpenIDResponse()) {
-            $this->makeOpenIDRequest($this->data['OpenidUrl']['openid'], $returnTo, $realm);
-        } elseif ($this->Openid->isOpenIDResponse()) {
-            $this->handleOpenIDResponse($returnTo);
+            try {
+                $this->Openid->authenticate($this->data['OpenidUrl']['openid'], $returnTo, $realm);
+            } catch (InvalidArgumentException $e) {
+                $this->set('error', 'Invalid OpenID');
+            } catch (Exception $e) {
+                $this->set('error', $e->getMessage());
+            }
+       } elseif ($this->Openid->isOpenIDResponse()) {
+            $response = $this->Openid->getResponse($returnTo);
+
+            if ($response->status == Auth_OpenID_CANCEL) {
+                $this->set('error', 'Verification cancelled');
+            } elseif ($response->status == Auth_OpenID_FAILURE) {
+                $this->set('error', 'OpenID verification failed: '.$response->message);
+            } elseif ($response->status == Auth_OpenID_SUCCESS) {
+            
+                $apiKey = "4025BCF7889FDAE9DC651ECE0EC4022E";
+
+		        $response = $this->Openid->getResponse($returnTo);
+		
+		        if ($response->status == Auth_OpenID_SUCCESS) {
+					
+					$params = $this->params['url'];
+		
+		            echo "Success!<br>";
+		
+		            preg_match("#^http://steamcommunity.com/openid/id/([0-9]{17,25})#", $_GET['openid_claimed_id'], $matches);
+					$steamID = is_numeric($matches[1]) ? $matches[1] : 0;
+					
+					return $steamID;
+					}
+					
+            }
         }
-    }
-    
-    private function makeOpenIDRequest($openid, $returnTo, $realm) {
-        $required = array('email');
-        $optional = array('nickname');
-        $this->Openid->authenticate($openid, $returnTo, $realm, array('sreg_required' => $required, 'sreg_optional' => $optional));
-    }
-    
-    private function handleOpenIDResponse($returnTo) {
         
-        $apiKey = "4025BCF7889FDAE9DC651ECE0EC4022E";
-
-        $response = $this->Openid->getResponse($returnTo);
-
-        if ($response->status == Auth_OpenID_SUCCESS) {
-			
-			$params = $this->params['url'];
-
-            echo "Success!<br>";
-
-            preg_match("#^http://steamcommunity.com/openid/id/([0-9]{17,25})#", $_GET['openid_claimed_id'], $matches);
-			$steamID = is_numeric($matches[1]) ? $matches[1] : 0;
-			
-			$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
+        if(isset($steamID)) {
+        	$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
 			$apiuserinfo = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
 			
 			$steam_name = $this->strip_cdata($userinfo->steamID);
@@ -56,10 +66,14 @@ class UsersController extends AppController {
 		  	$steam_loc_state = $apiuserinfo->players->player->locstatecode;
 		  	$steam_loc_cityid = $apiuserinfo->players->player->loccityid;
 		  	
-		  	echo $steam_name;
+		  	echo $steam_name."<br>";
+		  	echo $steam_realname;
 			
         }
+        
+        
     }
+    
 }
 
 ?>
