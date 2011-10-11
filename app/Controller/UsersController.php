@@ -4,6 +4,11 @@ class UsersController extends AppController {
     public $components = array('Openid', 'RequestHandler');
     public $uses = array();
 
+    public function strip_cdata($string) { 
+		    preg_match_all('/<!\[cdata\[(.*?)\]\]>/is', $string, $matches); 
+		    return str_replace($matches[0], $matches[1], $string); 
+		}
+
     public function login() {
         $realm = 'http://'.$_SERVER['HTTP_HOST'];
         $returnTo = $realm . '/users/login';
@@ -26,12 +31,6 @@ class UsersController extends AppController {
         $apiKey = "4025BCF7889FDAE9DC651ECE0EC4022E";
 
         $response = $this->Openid->getResponse($returnTo);
-        
-        function strip_cdata($string) 
-		{ 
-		    preg_match_all('/<!\[cdata\[(.*?)\]\]>/is', $string, $matches); 
-		    return str_replace($matches[0], $matches[1], $string); 
-		}
 
         if ($response->status == Auth_OpenID_SUCCESS) {
 			
