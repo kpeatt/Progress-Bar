@@ -5,37 +5,33 @@ class UsersController extends AppController {
     public $uses = array();
 
     public function login() {
-        $realm = 'http://' . $_SERVER['HTTP_HOST'];
+        $realm = 'http://'.$_SERVER['HTTP_HOST'];
         $returnTo = $realm . '/users/login';
 
         if ($this->RequestHandler->isPost() && !$this->Openid->isOpenIDResponse()) {
-            try {
-                $this->Openid->authenticate($this->data['OpenidUrl']['openid'], $returnTo, $realm);
-            } catch (InvalidArgumentException $e) {
-                $this->set('error', 'Invalid OpenID');
-            } catch (Exception $e) {
-                $this->set('error', $e->getMessage());
-            }
+            $this->makeOpenIDRequest($this->data['OpenidUrl']['openid'], $returnTo, $realm);
         } elseif ($this->Openid->isOpenIDResponse()) {
-            $response = $this->Openid->getResponse($returnTo);
+            $this->handleOpenIDResponse($returnTo);
+        }
+    }
+    
+    private function makeOpenIDRequest($openid, $returnTo, $realm) {
+        $required = array('email');
+        $optional = array('nickname');
+        $this->Openid->authenticate($openid, $returnTo, $realm, array('sreg_required' => $required, 'sreg_optional' => $optional));
+    }
+    
+    private function handleOpenIDResponse($returnTo) {
+        $response = $this->Openid->getResponse($returnTo);
 
-            if ($response->status == Auth_OpenID_CANCEL) {
-                $this->set('error', 'Verification cancelled');
-            } elseif ($response->status == Auth_OpenID_FAILURE) {
-                $this->set('error', 'OpenID verification failed: '.$response->message);
-            } elseif ($response->status == Auth_OpenID_SUCCESS) {
-                echo 'successfully authenticated!<br><br>';
-                
-	            $sregResponse = Auth_OpenID_SRegResponse::fromSuccessResponse($response);
-	            $sregContents = $sregResponse->contents();
-	
-	            if ($sregContents) {
-	                if (array_key_exists('claimed_id', $sregContents)) {
-	                    debug($sregContents['claimed_id']);
-	                }
-	            }
-	            
-                exit;
+        if ($response->status == Auth_OpenID_SUCCESS) {
+            $sregResponse = Auth_OpenID_SRegResponse::fromSuccessResponse($response);
+            $sregContents = $sregResponse->contents();
+
+            if ($sregContents) {
+                if (array_key_exists('claimed_id', $sregContents)) {
+                    debug($sregContents['claimed_id']);
+                }
             }
         }
     }
