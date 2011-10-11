@@ -27,6 +27,8 @@ class UsersController extends AppController {
         if ($response->status == Auth_OpenID_SUCCESS) {
             $sregResponse = Auth_OpenID_SRegResponse::fromSuccessResponse($response);
             $sregContents = $sregResponse->contents();
+            
+            echo "Success!<br>"
 
             if ($sregContents) {
                 if (array_key_exists('claimed_id', $sregContents)) {
