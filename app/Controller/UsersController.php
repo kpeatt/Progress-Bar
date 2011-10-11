@@ -1,3 +1,5 @@
+<?php
+
 class UsersController extends AppController {
     public $components = array('Openid', 'RequestHandler');
     public $uses = array();
@@ -28,3 +30,5 @@ class UsersController extends AppController {
         }
     }
 }
+
+?>

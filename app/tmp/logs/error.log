@@ -10,3 +10,6 @@
 2011-10-11 12:09:39 Error: [MissingControllerException] Controller class UsersController could not be found.
 #0 /Users/kyle/Documents/Progress Bar/dev/app/webroot/index.php(96): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
 #1 {main}
+2011-10-11 12:12:49 Error: [MissingControllerException] Controller class UsersController could not be found.
+#0 /Users/kyle/Documents/Progress Bar/dev/app/webroot/index.php(96): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))
+#1 {main}
