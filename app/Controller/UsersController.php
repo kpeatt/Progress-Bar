@@ -24,7 +24,17 @@ class UsersController extends AppController {
             } elseif ($response->status == Auth_OpenID_FAILURE) {
                 $this->set('error', 'OpenID verification failed: '.$response->message);
             } elseif ($response->status == Auth_OpenID_SUCCESS) {
-                echo 'successfully authenticated!';
+                echo 'successfully authenticated!<br><br>';
+                
+	            $sregResponse = Auth_OpenID_SRegResponse::fromSuccessResponse($response);
+	            $sregContents = $sregResponse->contents();
+	
+	            if ($sregContents) {
+	                if (array_key_exists('claimed_id', $sregContents)) {
+	                    debug($sregContents['claimed_id']);
+	                }
+	            }
+	            
                 exit;
             }
         }
