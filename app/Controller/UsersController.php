@@ -15,6 +15,12 @@ class UsersController extends AppController {
         }
     }
     
+    private function strip_cdata($string) 
+	{ 
+	    preg_match_all('/<!\[cdata\[(.*?)\]\]>/is', $string, $matches); 
+	    return str_replace($matches[0], $matches[1], $string); 
+	}
+    
     private function makeOpenIDRequest($openid, $returnTo, $realm) {
         $required = array('email');
         $optional = array('nickname');
