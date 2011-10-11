@@ -30,7 +30,7 @@ class UsersController extends AppController {
             
             echo "Success!<br>";
 
-            debug($sregContents);
+            debug($sregResponse);
         }
     }
 }
