@@ -44,12 +44,12 @@ class UsersController extends AppController {
 			$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
 			$apiuserinfo = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
 			
-			$steam_name = strip_cdata($userinfo->steamID);
+			$steam_name = $this->strip_cdata($userinfo->steamID);
 		  	$steam_realname = $apiuserinfo->players->player->realname;
-		  	$steam_avatar = strip_cdata($userinfo->avatarIcon);
-		  	$steam_avatar_med = strip_cdata($userinfo->avatarMedium);
-		  	$steam_avatar_full = strip_cdata($userinfo->avatarFull);
-		  	$steam_customURL = strip_cdata($userinfo->customURL);
+		  	$steam_avatar = $this->strip_cdata($userinfo->avatarIcon);
+		  	$steam_avatar_med = $this->strip_cdata($userinfo->avatarMedium);
+		  	$steam_avatar_full = $this->strip_cdata($userinfo->avatarFull);
+		  	$steam_customURL = $this->strip_cdata($userinfo->customURL);
 		  	$steam_membersince = $apiuserinfo->players->player->timecreated;
 		  	$steam_lastlogoff = $apiuserinfo->players->player->lastlogoff;
 		  	$steam_loc_country = $apiuserinfo->players->player->loccountrycode;
