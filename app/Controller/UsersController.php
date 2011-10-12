@@ -34,8 +34,6 @@ class UsersController extends AppController {
 
         if ($response->status == Auth_OpenID_SUCCESS) {
 			
-			$params = $this->params['url'];
-
             echo "Success!<br>";
 
             preg_match("#^http://steamcommunity.com/openid/id/([0-9]{17,25})#", $_GET['openid_claimed_id'], $matches);
