@@ -81,7 +81,7 @@ class UsersController extends AppController {
     }
 
     private function makeOpenIDRequest($openid, $returnTo, $realm) {
-        $this->Openid->authenticate($openid, $returnTo, $realm));
+        $this->Openid->authenticate($openid, $returnTo, $realm);
     }
 
     private function handleOpenIDResponse($returnTo) {
