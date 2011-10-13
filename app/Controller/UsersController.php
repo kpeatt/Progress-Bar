@@ -4,11 +4,6 @@ class UsersController extends AppController {
     public $components = array('Openid', 'RequestHandler');
     public $uses = array();
 
-    public function beforeFilter() {
-	        parent::beforeFilter();
-	        $this->Auth->allow('add', 'logout');
-    }
-
     public function index() {
 	        $this->User->recursive = 0;
 	        $this->set('users', $this->paginate());
