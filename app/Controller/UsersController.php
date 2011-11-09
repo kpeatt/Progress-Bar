@@ -100,6 +100,7 @@ class UsersController extends AppController {
 		  	$steam_avatar = $this->strip_cdata($userinfo->avatarIcon);
 		  	$steam_avatar_med = $this->strip_cdata($userinfo->avatarMedium);
 		  	$steam_avatar_full = $this->strip_cdata($userinfo->avatarFull);
+		  	$steam_state = $this->strip_cdata($userinfo->stateMessage);
 		  	$steam_customURL = $this->strip_cdata($userinfo->customURL);
 		  	$steam_membersince = $apiuserinfo->players->player->timecreated;
 		  	$steam_lastlogoff = $apiuserinfo->players->player->lastlogoff;
@@ -115,7 +116,7 @@ class UsersController extends AppController {
 		  		$this->User->set('steam_id', $steamID);
 				$this->User->set('steam_name', $steam_name);
 				$this->User->set('steam_realname', $steam_realname);
-				$this->User->set('steam_customurl', $steam_customurl);
+				$this->User->set('steam_customurl', $steam_customURL);
 				$this->User->set('steam_avatar', $steam_avatar);
 				$this->User->set('steam_avatar_med', $steam_avatar_med);
 				$this->User->set('steam_avatar_full', $steam_avatar_full);
