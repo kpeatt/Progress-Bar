@@ -112,26 +112,23 @@ class UsersController extends AppController {
 
 		  	$this->User->create();
 		  	
-		  		$this->User->steam_id = $steam_id;
-				$this->User->steam_name = $steam_name;
-				$this->User->steam_realname = $steam_realname;
-				$this->User->steam_customurl = $steam_customurl;
-				$this->User->steam_avatar = $steam_avatar;
-				$this->User->steam_avatar_med = $steam_avatar_med;
-				$this->User->steam_avatar_full = $steam_avatar_full;
-				$this->User->steam_state = $steam_state;
-				$this->User->steam_loc_country = $steam_loc_country;
-				$this->User->steam_loc_state = $steam_loc_state;
-				$this->User->steam_loc_cityid = $steam_loc_cityid;
-				$this->User->steam_lastlogoff = $steam_lastlogoff;
-				$this->User->steam_lastlogoff = $steam_membersince;
+		  		$this->User->set('steam_id', $steamID);
+				$this->User->set('steam_name', $steam_name);
+				$this->User->set('steam_realname', $steam_realname);
+				$this->User->set('steam_customurl', $steam_customurl);
+				$this->User->set('steam_avatar', $steam_avatar);
+				$this->User->set('steam_avatar_med', $steam_avatar_med);
+				$this->User->set('steam_avatar_full', $steam_avatar_full);
+				$this->User->set('steam_state', $steam_state);
+				$this->User->set('steam_loc_country', $steam_loc_country);
+				$this->User->set('steam_loc_state', $steam_loc_state);
+				$this->User->set('steam_loc_cityid', $steam_loc_cityid);
+				$this->User->set('steam_lastlogoff', $steam_lastlogoff);
+				$this->User->set('steam_lastlogoff', $steam_membersince);
 				
 	        if($this->User->save()) {
 	        	$this->set('error', 'This user has been saved');
-	        } else {
-	        	$this->set('error', 'This user has not been saved');
 	        }
-
         }
     }
 
