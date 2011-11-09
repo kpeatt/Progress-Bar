@@ -127,7 +127,9 @@ class UsersController extends AppController {
 				$this->User->steam_lastlogoff = $steam_membersince;
 				
 	        if($this->User->save()) {
-	        	$this->set->('user', 'This user has been saved');
+	        	$this->set->('error', 'This user has been saved');
+	        } else {
+	        	$this->set->('error', 'This user has not been saved');
 	        }
 
         }
