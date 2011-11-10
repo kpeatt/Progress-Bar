@@ -91,9 +91,13 @@ class UsersController extends AppController {
 
             preg_match("#^http://steamcommunity.com/openid/id/([0-9]{17,25})#", $_GET['openid_claimed_id'], $matches);
 			$steamID = is_numeric($matches[1]) ? $matches[1] : 0;
-
-			$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
-			$apiuserinfo = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
+			
+			$userinfo = Xml::toArray("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
+			//$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
+			
+			
+			$apiuserinfo = Xml::toArray("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
+			//$apiuserinfo = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
 			
 			$data = array(
 				'steam_id' => $steamID,
@@ -111,11 +115,11 @@ class UsersController extends AppController {
 			  	'$steam_loc_cityid' => $apiuserinfo->players->player->loccityid,
 			);
 
-			print_r($userinfo);
+			echo "User Info XML".print_r($userinfo)."<br>";
 			
-			print_r($apiuserinfo);
+			echo "API Info XML".print_r($apiuserinfo)."<br>";
 
-		  	print_r($data);
+		  	echo "My Data Array".print_r($data);
 
 		//  	$this->User->create();
 				
