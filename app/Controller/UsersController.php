@@ -100,25 +100,25 @@ class UsersController extends AppController {
 			
 			$data = array(
 				'steam_id' => $steamID,
-				'steam_name' => $this->strip_cdata($userinfo->steamID),
-				'$steam_realname' => $apiuserinfo->players->player->realname,
-				'$steam_avatar' => $this->strip_cdata($userinfo->avatarIcon),
-			  	'$steam_avatar_med' => $this->strip_cdata($userinfo->avatarMedium),
-			  	'$steam_avatar_full' => $this->strip_cdata($userinfo->avatarFull),
-			  	'$steam_state' => $this->strip_cdata($userinfo->stateMessage),
-			  	'$steam_customURL' => $this->strip_cdata($userinfo->customURL),
-			  	'$steam_membersince' => $apiuserinfo->players->player->timecreated,
-			  	'$steam_lastlogoff' => $apiuserinfo->players->player->lastlogoff,
-			  	'$steam_loc_country' => $apiuserinfo->players->player->loccountrycode,
-			  	'$steam_loc_state' => $apiuserinfo->players->player->locstatecode,
-			  	'$steam_loc_cityid' => $apiuserinfo->players->player->loccityid,
+				'steam_name' => $userinfo['profile']['steamID'],
+				'$steam_realname' => $userinfo['profile']['realname'],
+				'$steam_avatar' => $userinfo['profile']['avatarIcon'],
+			  	'$steam_avatar_med' => $userinfo['profile']['avatarMedium'],
+			  	'$steam_avatar_full' => $userinfo['profile']['avatarFull'],
+			  	'$steam_state' => $userinfo['profile']['stateMessage'],
+			  	'$steam_customURL' => $userinfo['profile']['customURL'],
+			  	'$steam_membersince' => $apiuserinfo['players']['player']['timecreated'],
+			  	'$steam_lastlogoff' => $apiuserinfo['players']['player']['lastlogoff'],
+			  	'$steam_loc_country' => $apiuserinfo['players']['player']['loccountrycode'],
+			  	'$steam_loc_state' => $apiuserinfo['players']['player']['locstatecode'],
+			  	'$steam_loc_cityid' => $apiuserinfo['players']['player']['loccityid']
 			);
 
-			echo "User Info XML".print_r($userinfo)."<br>";
+			echo "User Info XML<br><br>".print_r($userinfo)."<br><br>";
 			
-			echo "API Info XML".print_r($apiuserinfo)."<br>";
+			echo "API Info XML<br><br>".print_r($apiuserinfo)."<br><br>";
 
-		  	echo "My Data Array".print_r($data);
+		  	echo "My Data Array<br><br>".print_r($data);
 
 		//  	$this->User->create();
 				
