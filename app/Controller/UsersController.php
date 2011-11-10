@@ -122,7 +122,7 @@ class UsersController extends AppController {
 	  //      if($this->User->save($data)) {
 	  //      	$this->set('error', 'This user has been saved');
 	  //      }
-      //  }
+        }
     }
 
     public function strip_cdata($string) {
