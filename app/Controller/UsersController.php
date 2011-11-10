@@ -94,40 +94,29 @@ class UsersController extends AppController {
 
 			$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
 			$apiuserinfo = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
+			
+			$data = array(
+				'steam_id' => $steamID,
+				'steam_name' => $this->strip_cdata($userinfo->steamID),
+				'steam_realname' => $steam_realname,
+				'steam_customurl' => $steam_customURL,
+				'steam_avatar' => $steam_avatar,
+				'steam_avatar_med' => $steam_avatar_med,
+				'steam_avatar_full' => $steam_avatar_full,
+				'steam_state' => $steam_state,
+				'steam_loc_country' => $steam_loc_country,
+				'steam_loc_state' => $steam_loc_state,
+				'steam_loc_cityid' => $steam_loc_cityid,
+				'steam_lastlogoff' => $steam_lastlogoff,
+				'steam_membersince' => $steam_membersince
+			);
 
-			$steam_name = $this->strip_cdata($userinfo->steamID);
-		  	$steam_realname = $apiuserinfo->players->player->realname;
-		  	$steam_avatar = $this->strip_cdata($userinfo->avatarIcon);
-		  	$steam_avatar_med = $this->strip_cdata($userinfo->avatarMedium);
-		  	$steam_avatar_full = $this->strip_cdata($userinfo->avatarFull);
-		  	$steam_state = $this->strip_cdata($userinfo->stateMessage);
-		  	$steam_customURL = $this->strip_cdata($userinfo->customURL);
-		  	$steam_membersince = $apiuserinfo->players->player->timecreated;
-		  	$steam_lastlogoff = $apiuserinfo->players->player->lastlogoff;
-		  	$steam_loc_country = $apiuserinfo->players->player->loccountrycode;
-		  	$steam_loc_state = $apiuserinfo->players->player->locstatecode;
-		  	$steam_loc_cityid = $apiuserinfo->players->player->loccityid;
-
-		  	echo $steam_name.'<br>';
-		  	echo $steam_realname;
+		  	echo $data['steam_name'].'<br>';
+		  	echo $data['steam_realname'];
 
 		  	$this->User->create();
-		  	
-		  		$this->User->set('steam_id', $steamID);
-				$this->User->set('steam_name', $steam_name);
-				$this->User->set('steam_realname', $steam_realname);
-				$this->User->set('steam_customurl', $steam_customURL);
-				$this->User->set('steam_avatar', $steam_avatar);
-				$this->User->set('steam_avatar_med', $steam_avatar_med);
-				$this->User->set('steam_avatar_full', $steam_avatar_full);
-				$this->User->set('steam_state', $steam_state);
-				$this->User->set('steam_loc_country', $steam_loc_country);
-				$this->User->set('steam_loc_state', $steam_loc_state);
-				$this->User->set('steam_loc_cityid', $steam_loc_cityid);
-				$this->User->set('steam_lastlogoff', $steam_lastlogoff);
-				$this->User->set('steam_lastlogoff', $steam_membersince);
 				
-	        if($this->User->save()) {
+	        if($this->User->save($data)) {
 	        	$this->set('error', 'This user has been saved');
 	        }
         }
