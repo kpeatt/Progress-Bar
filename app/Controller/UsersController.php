@@ -92,12 +92,11 @@ class UsersController extends AppController {
             preg_match("#^http://steamcommunity.com/openid/id/([0-9]{17,25})#", $_GET['openid_claimed_id'], $matches);
 			$steamID = is_numeric($matches[1]) ? $matches[1] : 0;
 			
-			$userinfo = Xml::toArray("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
-			//$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
+			$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
+			$userinfo = Xml::toArray($userinfo);
 			
-			
-			$apiuserinfo = Xml::toArray("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
-			//$apiuserinfo = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
+			$apiuserinfo = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
+			$apiuserinfo = Xml::toArray($apiuserinfo);
 			
 			$data = array(
 				'steam_id' => $steamID,
