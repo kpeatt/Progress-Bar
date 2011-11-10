@@ -107,18 +107,18 @@ class UsersController extends AppController {
 			  	'$steam_avatar_full' => $userinfo['profile']['avatarFull'],
 			  	'$steam_state' => $userinfo['profile']['stateMessage'],
 			  	'$steam_customURL' => $userinfo['profile']['customURL'],
-			  	'$steam_membersince' => $apiuserinfo['players']['player']['timecreated'],
-			  	'$steam_lastlogoff' => $apiuserinfo['players']['player']['lastlogoff'],
-			  	'$steam_loc_country' => $apiuserinfo['players']['player']['loccountrycode'],
-			  	'$steam_loc_state' => $apiuserinfo['players']['player']['locstatecode'],
-			  	'$steam_loc_cityid' => $apiuserinfo['players']['player']['loccityid']
+			  	'$steam_membersince' => $apiuserinfo['response']['players']['player']['timecreated'],
+			  	'$steam_lastlogoff' => $apiuserinfo['response']['players']['player']['lastlogoff'],
+			  	'$steam_loc_country' => $apiuserinfo['response']['players']['player']['loccountrycode'],
+			  	'$steam_loc_state' => $apiuserinfo['response']['players']['player']['locstatecode'],
+			  	'$steam_loc_cityid' => $apiuserinfo['response']['players']['player']['loccityid']
 			);
 
-			echo "User Info XML<br><br>".print_r($userinfo)."<br><br>";
+			echo "User Info XML<br><br>".debug($userinfo)."<br><br>";
 			
-			echo "API Info XML<br><br>".print_r($apiuserinfo)."<br><br>";
+			echo "API Info XML<br><br>".debug($apiuserinfo)."<br><br>";
 
-		  	echo "My Data Array<br><br>".print_r($data);
+		  	echo "My Data Array<br><br>".debug($data);
 
 		//  	$this->User->create();
 				
