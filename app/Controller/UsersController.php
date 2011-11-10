@@ -111,15 +111,18 @@ class UsersController extends AppController {
 			  	'$steam_loc_cityid' => $apiuserinfo->players->player->loccityid,
 			);
 
-		  	echo $data['steam_name'].'<br>';
-		  	echo $data['steam_realname'];
+			print_r($userinfo);
+			
+			print_r($apiuserinfo);
 
-		  	$this->User->create();
+		  	print_r($data);
+
+		//  	$this->User->create();
 				
-	        if($this->User->save($data)) {
-	        	$this->set('error', 'This user has been saved');
-	        }
-        }
+	  //      if($this->User->save($data)) {
+	  //      	$this->set('error', 'This user has been saved');
+	  //      }
+      //  }
     }
 
     public function strip_cdata($string) {
