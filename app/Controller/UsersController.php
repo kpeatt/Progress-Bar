@@ -67,18 +67,29 @@ class UsersController extends AppController {
     public function login() {
         $realm = 'http://'.$_SERVER['HTTP_HOST'];
         $returnTo = $realm . '/users/login';
-        $auth = false;
 
         if ($this->RequestHandler->isPost() && !$this->Openid->isOpenIDResponse()) {
             $this->makeOpenIDRequest($this->data['OpenidUrl']['openid'], $returnTo, $realm);
         } elseif ($this->Openid->isOpenIDResponse()) {
             $this->handleOpenIDResponse($returnTo);
         }
+    }
 
-		if($auth) {
-			        
-        	preg_match("#^http://steamcommunity.com/openid/id/([0-9]{17,25})#", $_GET['openid_claimed_id'], $matches);
+    private function makeOpenIDRequest($openid, $returnTo, $realm) {
+        $this->Openid->authenticate($openid, $returnTo, $realm);
+    }
 
+    private function handleOpenIDResponse($returnTo) {
+
+        $apiKey = "4025BCF7889FDAE9DC651ECE0EC4022E";
+
+        $response = $this->Openid->getResponse($returnTo);
+
+        if ($response->status == Auth_OpenID_SUCCESS) {
+
+            echo "Success!<br>";
+
+            preg_match("#^http://steamcommunity.com/openid/id/([0-9]{17,25})#", $_GET['openid_claimed_id'], $matches);
 			$steamID = is_numeric($matches[1]) ? $matches[1] : 0;
 			
 			$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
@@ -102,34 +113,25 @@ class UsersController extends AppController {
 			  	'$steam_loc_state' => $apiuserinfo['response']['players']['player']['locstatecode'],
 			  	'$steam_loc_cityid' => $apiuserinfo['response']['players']['player']['loccityid']
 			);
-	
-		  	$this->User->create();
+
+			echo "User Info XML<br><br>".debug($userinfo)."<br><br>";
+			
+			echo "API Info XML<br><br>".debug($apiuserinfo)."<br><br>";
+
+		  	echo "My Data Array<br><br>".debug($data);
+
+		//  	$this->User->create();
 				
-	        if($this->User->save($data)) {
-	        	$this->set('error', 'This user has been saved');
-	        }
-	        
+	  //      if($this->User->save($data)) {
+	  //      	$this->set('error', 'This user has been saved');
+	  //      }
         }
     }
 
-    private function makeOpenIDRequest($openid, $returnTo, $realm) {
-        $this->Openid->authenticate($openid, $returnTo, $realm);
-    }
-
-    private function handleOpenIDResponse($returnTo) {
-
-        $apiKey = "4025BCF7889FDAE9DC651ECE0EC4022E";
-
-        $response = $this->Openid->getResponse($returnTo);
-
-        if ($response->status == Auth_OpenID_SUCCESS) {
-
-            $auth = true;
-            
-            return $auth;
-       
-        }
-    }
+    public function strip_cdata($string) {
+			    preg_match_all('/<!\[cdata\[(.*?)\]\]>/is', $string, $matches);
+			    return str_replace($matches[0], $matches[1], $string);
+	}
 }
 
 ?>
