@@ -1,8 +1,15 @@
 <?php
 
 class UsersController extends AppController {
-    public $components = array('Openid', 'RequestHandler');
-    public $uses = array();
+    public $components = array('Openid', 'RequestHandler', 'Auth', 'Cookie', 'Session');
+    public $uses = array('User');
+
+	function beforeFilter() {
+		parent::beforeFilter();
+		$this->Auth->loginRedirect = $this->__getRedirectUrl();
+		$this->Auth->allow('index', 'login', 'register', 'newpassword', 'setnewpassword');
+		$this->__setupLayout();
+	}
 
     public function index() {
 	        $this->User->recursive = 0;
@@ -67,90 +74,34 @@ class UsersController extends AppController {
     public function login() {
         $realm = 'http://'.$_SERVER['HTTP_HOST'];
         $returnTo = $realm . '/users/login';
+        
+        if(!empty($this->data)) {
+        	if ($this->RequestHandler->isPost() && !$this->Openid->isOpenIDResponse()) {
+            	$this->User->makeOpenIDRequest($this->data['OpenidUrl']['openid'], $returnTo, $realm);
+        	} elseif ($this->Openid->isOpenIDResponse()) {
+            	$this->User->handleOpenIDResponse($returnTo);
+        	}
+		}
 
-        if ($this->RequestHandler->isPost() && !$this->Openid->isOpenIDResponse()) {
-            $this->makeOpenIDRequest($this->data['OpenidUrl']['openid'], $returnTo, $realm);
-        } elseif ($this->Openid->isOpenIDResponse()) {
-            $this->handleOpenIDResponse($returnTo);
-        }
+        
     }
-
-    private function makeOpenIDRequest($openid, $returnTo, $realm) {
-        $this->Openid->authenticate($openid, $returnTo, $realm);
+    
+    public function logout() {
+    	$this->Auth->logout();
+		$this->redirect('/users/login');
     }
-
-    private function handleOpenIDResponse($returnTo) {
-
-        $apiKey = "4025BCF7889FDAE9DC651ECE0EC4022E";
-
-        $response = $this->Openid->getResponse($returnTo);
-
-        if ($response->status == Auth_OpenID_SUCCESS) {
-
-            echo "Success!<!-- <br> -->";
-
-            preg_match("#^http://steamcommunity.com/openid/id/([0-9]{17,25})#", $_GET['openid_claimed_id'], $matches);
-			$steamID = is_numeric($matches[1]) ? $matches[1] : 0;
-			
-			$this->User->steam_id = $steamID;
-			
-			if (!$this->User->exists()) {
-			
-				$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
-				$userinfo = Xml::toArray($userinfo);
-				
-				$apiuserinfo = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
-				$apiuserinfo = Xml::toArray($apiuserinfo);
-				
-				$data = array(
-					'steam_id' => $steamID,
-					'steam_name' => $userinfo['profile']['steamID'],
-					'steam_realname' => $userinfo['profile']['realname'],
-					'steam_avatar' => $userinfo['profile']['avatarIcon'],
-				  	'steam_avatar_med' => $userinfo['profile']['avatarMedium'],
-				  	'steam_avatar_full' => $userinfo['profile']['avatarFull'],
-				  	'steam_state' => $userinfo['profile']['stateMessage'],
-				  	'steam_customURL' => $userinfo['profile']['customURL'],
-				  	'steam_membersince' => $apiuserinfo['response']['players']['player']['timecreated'],
-				  	'steam_lastlogoff' => $apiuserinfo['response']['players']['player']['lastlogoff'],
-				  	'steam_loc_country' => $apiuserinfo['response']['players']['player']['loccountrycode'],
-				  	'steam_loc_state' => $apiuserinfo['response']['players']['player']['locstatecode'],
-				  	'steam_loc_cityid' => $apiuserinfo['response']['players']['player']['loccityid']
-				);
+    
+    public function dashboard() {
+    }
 	
-			  	debug($data);
-	
-			  	$this->User->create();
-					
-		        if($this->User->save($data)) {
-		        	$this->set('error', 'This user has been saved');
-		       	}
-	       
-	       } else {
-	       
-		       	$userinfo = simplexml_load_file("http://steamcommunity.com/profiles/".$steamID."/?xml=1");
-				$userinfo = Xml::toArray($userinfo);
-				
-				$apiuserinfo = simplexml_load_file("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".$apiKey."&steamids=".$steamID."&format=xml");
-				$apiuserinfo = Xml::toArray($apiuserinfo);
-				
-				$data = array(
-				  	'steam_state' => $userinfo['profile']['stateMessage'],
-				  	'steam_lastlogoff' => $apiuserinfo['response']['players']['player']['lastlogoff'],
-				);
-				
-				if($this->User->save($data)) {
-		        	$this->set('error', 'This user already existed and has been updated');
-		       	}
-	       
-	       }
-        }
-    }
-
-    public function strip_cdata($string) {
-			    preg_match_all('/<!\[cdata\[(.*?)\]\]>/is', $string, $matches);
-			    return str_replace($matches[0], $matches[1], $string);
-	}
+	function __getRedirectUrl() {
+   		if($this->Session->check('users.redirect')) {
+   			$redirectUrl = $this->Session->read('users.redirect');
+   		} else {
+   			$redirectUrl = '/users/dashboard';
+   		}
+   		return $redirectUrl;
+   	}
 }
 
 ?>
