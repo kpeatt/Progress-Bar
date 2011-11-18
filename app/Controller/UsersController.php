@@ -120,11 +120,11 @@ class UsersController extends AppController {
 
 		  	echo "My Data Array<br><br>".debug($data);
 
-		//  	$this->User->create();
+		  	$this->User->create();
 				
-	  //      if($this->User->save($data)) {
-	  //      	$this->set('error', 'This user has been saved');
-	  //      }
+	        if($this->User->save($data)) {
+	        	$this->set('error', 'This user has been saved');
+	       }
         }
     }
 
