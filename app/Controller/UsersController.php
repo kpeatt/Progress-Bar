@@ -101,24 +101,20 @@ class UsersController extends AppController {
 			$data = array(
 				'steam_id' => $steamID,
 				'steam_name' => $userinfo['profile']['steamID'],
-				'$steam_realname' => $userinfo['profile']['realname'],
-				'$steam_avatar' => $userinfo['profile']['avatarIcon'],
-			  	'$steam_avatar_med' => $userinfo['profile']['avatarMedium'],
-			  	'$steam_avatar_full' => $userinfo['profile']['avatarFull'],
-			  	'$steam_state' => $userinfo['profile']['stateMessage'],
-			  	'$steam_customURL' => $userinfo['profile']['customURL'],
-			  	'$steam_membersince' => $apiuserinfo['response']['players']['player']['timecreated'],
-			  	'$steam_lastlogoff' => $apiuserinfo['response']['players']['player']['lastlogoff'],
-			  	'$steam_loc_country' => $apiuserinfo['response']['players']['player']['loccountrycode'],
-			  	'$steam_loc_state' => $apiuserinfo['response']['players']['player']['locstatecode'],
-			  	'$steam_loc_cityid' => $apiuserinfo['response']['players']['player']['loccityid']
+				'steam_realname' => $userinfo['profile']['realname'],
+				'steam_avatar' => $userinfo['profile']['avatarIcon'],
+			  	'steam_avatar_med' => $userinfo['profile']['avatarMedium'],
+			  	'steam_avatar_full' => $userinfo['profile']['avatarFull'],
+			  	'steam_state' => $userinfo['profile']['stateMessage'],
+			  	'steam_customURL' => $userinfo['profile']['customURL'],
+			  	'steam_membersince' => $apiuserinfo['response']['players']['player']['timecreated'],
+			  	'steam_lastlogoff' => $apiuserinfo['response']['players']['player']['lastlogoff'],
+			  	'steam_loc_country' => $apiuserinfo['response']['players']['player']['loccountrycode'],
+			  	'steam_loc_state' => $apiuserinfo['response']['players']['player']['locstatecode'],
+			  	'steam_loc_cityid' => $apiuserinfo['response']['players']['player']['loccityid']
 			);
 
-			echo "User Info XML<br><br>".debug($userinfo)."<br><br>";
-			
-			echo "API Info XML<br><br>".debug($apiuserinfo)."<br><br>";
-
-		  	echo "My Data Array<br><br>".debug($data);
+		  	debug($data);
 
 		  	$this->User->create();
 				
