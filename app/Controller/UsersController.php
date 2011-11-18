@@ -74,7 +74,7 @@ class UsersController extends AppController {
             $this->handleOpenIDResponse($returnTo);
         }
 
-		if $auth {
+		if($auth) {
 			        
         	preg_match("#^http://steamcommunity.com/openid/id/([0-9]{17,25})#", $_GET['openid_claimed_id'], $matches);
 
