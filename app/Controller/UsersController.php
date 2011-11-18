@@ -67,6 +67,7 @@ class UsersController extends AppController {
     public function login() {
         $realm = 'http://'.$_SERVER['HTTP_HOST'];
         $returnTo = $realm . '/users/login';
+        $auth = false;
 
         if ($this->RequestHandler->isPost() && !$this->Openid->isOpenIDResponse()) {
             $this->makeOpenIDRequest($this->data['OpenidUrl']['openid'], $returnTo, $realm);
