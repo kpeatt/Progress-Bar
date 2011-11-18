@@ -8,7 +8,7 @@ class UsersController extends AppController {
 		parent::beforeFilter();
 		$this->Auth->loginRedirect = $this->__getRedirectUrl();
 		$this->Auth->allow('index', 'login', 'register', 'newpassword', 'setnewpassword');
-		$this->__setupLayout();
+//		$this->__setupLayout();
 	}
 
     public function index() {
