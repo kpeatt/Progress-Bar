@@ -21,7 +21,7 @@ class User extends AppModel {
         ),
         'steam_realname' => array(
         ),
-        'steam_customurl' => array(
+        'steam_customURL' => array(
         ),
         'steam_avatar' => array(
         ),
